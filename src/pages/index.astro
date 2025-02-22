@@ -1,11 +1,18 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import {Button} from "@/components/ui/button";
 ---
 
 <Layout>
-	<Welcome />
+	<section id="hero" class="mt-16 space-y-8 text-center">
+		<h1 class="text-3xl font-extrabold">
+			Effortless Invoice Management<br />Save Time, Get Paid Faster!
+		</h1>
+		<a href="/register">
+			<Button client:load className="cursor-pointer">
+				Start right now!
+			</Button>
+		</a>
+	</section>
 </Layout>

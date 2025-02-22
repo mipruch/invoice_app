@@ -1,0 +1,78 @@
+---
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Login">
+	<Card className="mx-auto max-w-lg">
+		<CardHeader>
+			<CardTitle>Login</CardTitle>
+		</CardHeader>
+		<CardContent>
+			<form method="post" class="space-y-4">
+				<div>
+					<Label htmlFor="email">Email</Label>
+					<Input type="email" id="email" name="email" required />
+				</div>
+				<div>
+					<Label htmlFor="password">Password</Label>
+					<Input
+						type="password"
+						id="password"
+						name="password"
+						required
+					/>
+				</div>
+				<Button type="submit" className="ml-auto block cursor-pointer"
+					>Login</Button
+				>
+			</form>
+		</CardContent>
+		<CardFooter>
+			<CardDescription>
+				Don't have an account? <a
+					href="/register"
+					class="text-accent-foreground hover:underline">Register</a
+				>
+			</CardDescription>
+		</CardFooter>
+	</Card>
+</Layout>
+
+<script>
+	const form = document.querySelector("form");
+	form!.addEventListener("submit", login);
+
+	async function login(event: Event) {
+		event.preventDefault();
+		const form = event.target as HTMLFormElement;
+		const formData = new FormData(form);
+		const data = Object.fromEntries(formData.entries());
+
+		const response = await fetch("/api/login", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		});
+
+		if (!response.ok) {
+			console.error("Failed to login");
+			return;
+		}
+
+		window.location.href = "/";
+		console.log("Logged in");
+	}
+</script>

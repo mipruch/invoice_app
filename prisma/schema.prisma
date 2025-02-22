@@ -1,0 +1,73 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        String    @id @default(uuid())
+    email     String    @unique
+    password  String
+    name      String
+    clients   Client[]
+    invoices  Invoice[]
+    createdAt DateTime  @default(now())
+}
+
+model Client {
+    id          String    @id @default(uuid())
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      String
+    name        String
+    cin         String    @unique // IČO
+    vatin       String?   @unique // DIČ
+    bankAccount String?
+    email       String?
+    address     String?
+    invoices    Invoice[]
+    createdAt   DateTime  @default(now())
+}
+
+model Invoice {
+    id            String        @id @default(uuid())
+    user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId        String
+    client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+    clientId      String
+    invoiceNumber String
+    totalAmount   Decimal       @default(0.00)
+    currency      String        @default("CZK")
+    dueDate       DateTime
+    issueDate     DateTime      @default(now())
+    status        InvoiceStatus @default(PENDING)
+    s3PdfUrl      String?
+    items         InvoiceItem[]
+    createdAt     DateTime      @default(now())
+}
+
+model InvoiceItem {
+    id          String   @id @default(uuid())
+    invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+    invoiceId   String
+    description String
+    quantity    Decimal  @default(1.00)
+    unitPrice   Decimal
+    totalPrice  Decimal
+    createdAt   DateTime @default(now())
+}
+
+enum InvoiceStatus {
+    PENDING // Čeká na platbu
+    PAID // Zaplaceno
+    OVERDUE // Po splatnosti
+    CANCELED // Zrušeno
+}
+
+enum PaymentMethod {
+    BANK_TRANSFER
+    CARD
+    CASH
+}
